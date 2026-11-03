@@ -23,7 +23,8 @@ function start() {
 }
 
 function shutdown(server, signal) {
-  // TODO: add logger here
+  
+  logger.info(`Received ${signal}. Shutting down server...`);
 
   // server.close() is used to stop the server from accepting new connections and to finish existing connections before shutting down.
   // when the server is closed, the callback function is executed, which ends the database connection pool and exits the process with an appropriate exit code.
