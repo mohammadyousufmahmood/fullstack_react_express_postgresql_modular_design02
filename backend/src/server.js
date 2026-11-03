@@ -1,14 +1,14 @@
-const createApp = require("./app");
-const { env } = require("./config/env");
-const pool = require("./db/pool");
-const logger = require("./lib/logger");
+import createApp from "./app";
+import { env } from "./config/env";
+import { end, query } from "./db/pool";
+import { info, error } from "./lib/logger";
 
 // The start() function is responsible for starting and managing the server's lifecycle:
 function start() {
   const app = createApp();
 
   app.listen(env.port, () => {
-    logger.info("Server started", {
+    info("Server started", {
       port: env.port,
       nodeEnv: env.nodeEnv,
     });
@@ -29,7 +29,7 @@ function shutdown(server, signal) {
   // when the server is closed, the callback function is executed, which ends the database connection pool and exits the process with an appropriate exit code.
   server.close((closeErr) => {
     //
-    pool.end().then(
+    end().then(
       () => process.exit(closeErr ? 1 : 0),
       () => process.exit(1),
     );
@@ -43,17 +43,17 @@ function shutdown(server, signal) {
 
 async function checkDatabaseConnection() {
   try {
-    await pool.query("SELECT 1");
-    logger.info('PostgreSQL connection ready', {
+    await query("SELECT 1");
+    info('PostgreSQL connection ready', {
       host: env.db.host,
       port: env.db.port,
       database: env.db.name,
     });  } catch (err) {
-    logger.error("Database connection failed:", err);
+    error("Database connection failed:", err);
     process.exit(1);
   }
 }
 
 if (require.main === module) start();
 
-module.exports = { start };
+export default { start };
