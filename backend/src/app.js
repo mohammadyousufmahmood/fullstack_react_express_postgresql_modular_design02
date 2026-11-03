@@ -2,11 +2,11 @@
 // It brings together middleware, security settings, request handling, and routes.
 // It does not start the server. Your server.js (or index.js) is responsible for starting it.
 
-import express, { json } from "express";
-import cors from "cors";
-import { env } from "./config/env";
-import authRoutes from "./module/auth/authRoutes";
-import userRoutes from "./module/user/userRoutes";
+const express = require("express");
+const cors = require("cors");
+const { env } = require("./config/env");
+const authRoutes = require("./module/auth/authRoutes");
+const userRoutes = require("./module/user/userRoutes");
 
 function createApp() {
   const app = express();
@@ -18,7 +18,7 @@ function createApp() {
     credentials: true
    }));
 
-  app.use(json({ limit: "10mb" }));
+  app.use(express.json({ limit: "10mb" }));
 
   // Register your routes
   app.use("/auth", authRoutes);
@@ -28,4 +28,4 @@ function createApp() {
 }
 
 
-export default { createApp };
+module.exports = { createApp };

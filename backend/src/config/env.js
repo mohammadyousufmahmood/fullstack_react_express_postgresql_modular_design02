@@ -48,3 +48,6 @@ const env = Object.freeze({
     name: required("DB_NAME"),
   }),
 });
+
+
+module.exports = { env };
