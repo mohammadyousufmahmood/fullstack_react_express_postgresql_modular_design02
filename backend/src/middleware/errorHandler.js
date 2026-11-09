@@ -10,21 +10,46 @@ function isJsonParserError(err) {
 // _req	:   The incoming HTTP request
 // res	:   Used to send a response to the frontend
 // next	:   Passes the error to another error handler
-function errorHandler(err, req, res, next) {
 
-  if (isJsonParserError(err)) {
-    logger.error('JSON parsing error:', err);
-    return res.status(400).json({ error: 'Invalid JSON payload' });
+function errorHandler(err, _req, res, next) {
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+
+  if (isJsonParseError(err)) {
+    res.status(400).json({
+      error: {
+        code: 'INVALID_JSON',
+        message: 'Request body must be valid JSON',
+      },
+    });
+    return;
   }
 
   if (err instanceof AppError) {
-    logger.error('AppError:', err);
-    return res.status(err.statusCode).json({ error: err.message, code: err.code });
+    res.status(err.statusCode).json({
+      error: {
+        code: err.code,
+        message: err.message,
+      },
+    });
+    return;
   }
 
-  logger.error('Unhandled error:', err);
-  return res.status(500).json({ error: 'Internal server error' });
+  logger.error('Unhandled error', {
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+  });
 
+  res.status(500).json({
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: 'Internal server error',
+    },
+  });
 }
+
 
 module.exports = errorHandler;
