@@ -5,8 +5,11 @@
 const express = require("express");
 const cors = require("cors");
 const { env } = require("./config/env");
-const authRoutes = require("./module/auth/authRoutes");
-const userRoutes = require("./module/user/userRoutes");
+const apiHealthRouter = require("./modules/apiHealth/apiHealthRouter");
+const notFound = require("./middleware/notFound");
+const errorHandler = require("./middleware/errorHandler");
+// const authRoutes = require("./module/auth/authRoutes");
+// const userRoutes = require("./module/user/userRoutes");
 
 function createApp() {
   const app = express();
@@ -21,9 +24,11 @@ function createApp() {
   app.use(express.json({ limit: "10mb" }));
 
   // Register your routes
-  app.use("/auth", authRoutes);
-  app.use("/users", userRoutes);
-
+  // app.use("/auth", authRoutes);
+  // app.use("/users", userRoutes);
+  app.use("/api/health", apiHealthRouter);
+  app.use(notFound);
+  app.use(errorHandler);
   return app;
 }
 
